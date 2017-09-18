@@ -29,6 +29,7 @@ public class YangpushErrors {
             "Error in subscription filter",
             "Subscription not possible, due to resource unavailability",
             "Subscription id error in RPC input",
+            "Node has no capability to support datastore push establish-subscription",
     };
 
     public static enum errors{
@@ -46,6 +47,7 @@ public class YangpushErrors {
         subscription_creation_error,
         input_sub_id_error,
         max_error_count,
+        subscription_establish_error,
     };
 
     /**
