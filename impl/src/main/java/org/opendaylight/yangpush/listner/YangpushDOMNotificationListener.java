@@ -6,17 +6,27 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.yangpush.listner;
+package org.opendaylight.yangpush.listener;
 
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.IetfDatastorePushListener;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.PushChangeUpdate;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.PushUpdate;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.SubscriptionModified;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.SubscriptionResumed;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.SubscriptionStarted;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.SubscriptionSuspended;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.datastore.push.rev151015.SubscriptionTerminated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.yangpush.rev150105.PushUpdates;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.IetfEventNotificationsListener;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.push.rev161028.PushChangeUpdate;
+
+
+//org/opendaylight/yang/gen/v1/urn/ietf/params/xml/ns/yang/ietf/yang/push/rev161028/PushChangeUpdate.java
+// use fully-qualified name
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.NotificationComplete;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.ReplayComplete;
+
+
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.push.rev161028.PushUpdate;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.SubscriptionModified;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.SubscriptionResumed;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.SubscriptionStarted;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.SubscriptionSuspended;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.event.notifications.rev161027.SubscriptionTerminated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.opendaylight.yang.push.rev170721.PushUpdates;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.opendaylight.yang.push.rev170721.push.updates.PushUpdate;
+
 import org.opendaylight.yangpush.rpc.YangpushRpcImpl;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -28,6 +38,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -50,23 +61,28 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements Notification listener for the notification defined in
- * ietf-datastore-push.yang model.
+ * ietf-event-notifications.yang model.
  *
  * @author Ambika.Tripathy
  *
  */
-public class YangpushDOMNotificationListener implements IetfDatastorePushListener, DOMNotificationListener {
+//public class YangpushDOMNotificationListener implements IetfDatastorePushListener, DOMNotificationListener {
+public class YangpushDOMNotificationListener implements IetfEventNotificationsListener, DOMNotificationListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(YangpushDOMNotificationListener.class);
     private DOMDataBroker globalDomDataBroker;
    // private String subscription_id = "";
     List<String> subscriptionList = new ArrayList<String>();
 
-    NodeIdentifier encoding = new NodeIdentifier(YangpushRpcImpl.I_PUSH_ENCODING);
-    NodeIdentifier contents = new NodeIdentifier(YangpushRpcImpl.I_PUSH_DATASTORECONTENTSXML);
-    NodeIdentifier subid = new NodeIdentifier(YangpushRpcImpl.I_PUSH_SUB_ID);
-    NodeIdentifier timeofevent = new NodeIdentifier(YangpushRpcImpl.I_PUSH_TIME_OF_UPDATE);
+    //NodeIdentifier encoding = new NodeIdentifier(YangpushRpcImpl.I_PUSH_ENCODING);
+    //NodeIdentifier contents = new NodeIdentifier(YangpushRpcImpl.I_PUSH_DATASTORECONTENTSXML);
+    //NodeIdentifier subid = new NodeIdentifier(YangpushRpcImpl.I_PUSH_SUB_ID);
+    //NodeIdentifier timeofevent = new NodeIdentifier(YangpushRpcImpl.I_PUSH_TIME_OF_UPDATE);
 
+    NodeIdentifier encoding = new NodeIdentifier(YangpushRpcImpl.I_NOTIF_ENCODING);
+    NodeIdentifier contents = new NodeIdentifier(YangpushRpcImpl.I_NOTIF_FILTER);
+    NodeIdentifier subid = new NodeIdentifier(YangpushRpcImpl.I_NOTIF_SUB_ID);
+    NodeIdentifier timeofevent = new NodeIdentifier(YangpushRpcImpl.I_PUSH_TIME_OF_UPDATE);
     // Nodes to push notification data to mdsal datastore
     //public YangInstanceIdentifier push_update_iid = null;
 
@@ -92,16 +108,16 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
      * @param sub_id
      * @return
      */
-/*    private YangInstanceIdentifier buildIID(String sub_id) {
+    private YangInstanceIdentifier buildIID(String sub_id) {
 
-        QName pushupdate = QName.create(YangpushRpcImpl.YANGPUSH_NS, YangpushRpcImpl.YANGPUSH_NS_DATE, "push-update");
+        QName pushupdate = QName.create(YangpushRpcImpl.I_NOTIF_NS, YangpushRpcImpl.I_NOTIF_DATE, "push-update");
         org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder builder = org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier
                 .builder();
         builder.node(PushUpdates.QNAME).node(pushupdate).nodeWithKey(pushupdate,
                 QName.create(pushupdate, "subscription-id"), sub_id);
 
         return builder.build();
-    }*/
+    }
 
     /**
      * This method implements on Notification.
@@ -110,8 +126,9 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
      */
     @Override
     public void onNotification(DOMNotification notification) {
-        LOG.trace("Notification recieved {}", notification.getBody());
-        QName qname = PushUpdate.QNAME;
+        LOG.trace("Notification received {}", notification.getBody());
+        QName qname = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.push.rev161028.PushUpdate.QNAME;
+        //QName qname = org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.opendaylight.yang.push.rev170721.push.updates.PushUpdate.QNAME;
         SchemaPath schemaPath = SchemaPath.create(true, qname);
         if (notification.getType().equals(schemaPath)) {
             ContainerNode conNode = notification.getBody();
@@ -119,9 +136,9 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
             // subscription-id set for this object then proceed.
             //if (conNode.getChild(subid).get().getValue().toString().equals(subscription_id)){
             if (this.subscriptionList.contains(conNode.getChild(subid).get().getValue().toString())) {
-                LOG.trace("Received push-udpate for subscription {}",conNode.getChild(subid).get().getValue().toString() );
+                LOG.trace("Received push-update for subscription {}",conNode.getChild(subid).get().getValue().toString() );
                 try {
-                    pushUpdateHandlder(notification);
+                    pushUpdateHandler(notification);
                 } catch (Exception e) {
                     LOG.warn(e.toString());
                }
@@ -133,14 +150,14 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
     }
 
     /**
-     * This method parse the pushUpdate notification received
+     * This method parses the pushUpdate notification received
      * for the subscription-id and stores the data to md-sal
-     * using path /push-updates/push-update/[subscription-id=sub_id]/
+     * using path /push-updates/push-update/[device-subscription-id=sub_id]/
      *
      * @param notification
      * @return DOMSource for the notification
      */
-    private void pushUpdateHandlder(DOMNotification notification) {
+    private void pushUpdateHandler(DOMNotification notification) {
         ContainerNode conNode = notification.getBody();
         ChoiceNode valueNode = null;
         AnyXmlNode anyXmlValue = null;
@@ -162,7 +179,6 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
         storeToMdSal(sub_id, timeofeventupdate, domSource, notificationAsString);
     }
 
-
     /**
      * This method stores the pushUpdate Notification data to MD-SAL
      *
@@ -171,34 +187,52 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
      * @param domSource
      * @param data
      */
-    private void storeToMdSal(String sub_id, String timeofeventupdate, DOMSource domSource, String data) {
-        NodeIdentifier subscriptionid = NodeIdentifier.create(QName.create(PushUpdates.QNAME, "subscription-id"));
+    private void storeToMdSal(String dev_sub_id, String timeofeventupdate, DOMSource domSource, String data) {
+       // NodeIdentifier subscriptionid = NodeIdentifer.create(QName.create(PushUpdates.QNAME, "subscription-id"));
+        //NodeIdentifier devname = NodeIdentifier.create(QName.create(PushUpdates.QNAME, "device-name"));
+        NodeIdentifier devsubscriptionid = NodeIdentifier.create(QName.create(PushUpdates.QNAME, "device-subscription-id"));
         NodeIdentifier timeofupdate = NodeIdentifier.create(QName.create(PushUpdates.QNAME, "time-of-update"));
         NodeIdentifier datanode = NodeIdentifier.create(QName.create(PushUpdates.QNAME, "data"));
         YangInstanceIdentifier pid = YangInstanceIdentifier.builder()
                 .node(PushUpdates.QNAME)
-                .node(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.yangpush.rev150105.push.updates.PushUpdate.QNAME).build();
+                .node(PushUpdate.QNAME).build();
 
         NodeIdentifierWithPredicates p = new NodeIdentifierWithPredicates(
                 QName.create(PushUpdates.QNAME, "push-update"),
-                QName.create(PushUpdates.QNAME, "subscription-id"),
-                sub_id);
+                QName.create(PushUpdates.QNAME, "device-subscription-id"),
+                dev_sub_id);
 
         MapEntryNode men = ImmutableNodes.mapEntryBuilder().withNodeIdentifier(p)
-                .withChild(ImmutableNodes.leafNode(subscriptionid, sub_id))
+            //    .withChild(ImmutableNodes.leafNode(subscriptionid, sub_id))
+            //    .withChild(ImmutableNodes.leafNode(devname, dev_name))
+                .withChild(ImmutableNodes.leafNode(devsubscriptionid, dev_sub_id))
                 .withChild(ImmutableNodes.leafNode(timeofupdate, timeofeventupdate))
                 .withChild(ImmutableNodes.leafNode(datanode,data))
                 .build();
 
         DOMDataWriteTransaction tx = this.globalDomDataBroker.newWriteOnlyTransaction();
-        YangInstanceIdentifier yid = pid.node(new NodeIdentifierWithPredicates(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.yangpush.rev150105.push.updates.PushUpdate.QNAME, men.getIdentifier().getKeyValues()));
+        YangInstanceIdentifier yid = pid.node(new NodeIdentifierWithPredicates(PushUpdate.QNAME, men.getIdentifier().getKeyValues()));
         tx.merge(LogicalDatastoreType.CONFIGURATION, yid, men);
-        //LOG.info("--DATA PATh: {}\n--DATA\n{}",yid,men);
-        try {
+        LOG.trace("--DATA PATh: {}\n--DATA\n{}",yid,men);
+        
+	try {
             tx.submit().checkedGet();
         } catch (TransactionCommitFailedException e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Override
+    public void onReplayComplete(ReplayComplete notification) {
+	    // TODO Auto-generated method stub
+	   LOG.trace("Notification recieved {}", notification);
+    }
+
+    @Override
+    public void onNotificationComplete(NotificationComplete notification) {
+    	// TODO Auto-generated method stub
+	LOG.trace("Notification recieved {}", notification);
     }
 
     @Override
@@ -215,17 +249,18 @@ public class YangpushDOMNotificationListener implements IetfDatastorePushListene
 
     //TODO: Implement onPushUpdate instead of onNotification.
     // AT present no found how to do it in BI way. Hence using onNotification.
-    @Override
-    public void onPushUpdate(PushUpdate notification) {
+    
+    //@Override
+    //public void onPushUpdate(PushUpdate notification) {
         // TODO Auto-generated method stub
-        LOG.trace("Notification recieved {}", notification);
-    }
+    //    LOG.trace("Notification recieved {}", notification);
+    //}
 
-    @Override
-    public void onPushChangeUpdate(PushChangeUpdate notification) {
+    //@Override
+    //public void onPushChangeUpdate(PushChangeUpdate notification) {
         // TODO Auto-generated method stub
-        LOG.trace("Notification recieved {}", notification);
-    }
+    //    LOG.trace("Notification recieved {}", notification);
+    //}
 
     @Override
     public void onSubscriptionSuspended(SubscriptionSuspended notification) {
