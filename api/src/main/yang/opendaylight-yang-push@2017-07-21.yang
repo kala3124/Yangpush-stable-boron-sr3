@@ -1,0 +1,133 @@
+module opendaylight-yang-push {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:opendaylight-yang-push";
+
+    prefix "odl-yp";
+
+    import network-topology {
+        prefix nt;
+        revision-date "2013-10-21";
+    }
+
+    import ietf-event-notifications {
+        prefix notif-bis;
+    }
+    
+    import ietf-yang-types {
+        prefix yang;
+    }
+
+    organization "Cisco Systems";
+
+     contact
+       "Editor:   chandrakala K
+                  <mailto:ckempapu@cisco.com>"; 
+
+    description
+        "This YANG module augments ietf-yang-push with
+        additional parameters required to identify mounted devices.
+    
+        This model will be supported northbound by OpenDaylight
+        yangpush, which will use the ietf-yang-push model
+        southbound towards the NETCONF device.
+
+        The establish-subscription rpc and the configured subscription
+        are both augmented with a device reference - which points to
+        a mounted NETCONF device.
+
+        The active subscription is further augmented with the device's
+        subscription-id - as these are unique per device whereas ODL's 
+        list of subscriptions has a unique ID across all devices."; 
+
+    reference
+        "OpenDaylight yangpush";
+
+    revision "2017-07-21" {
+        description "initial revision";
+    }
+
+    typedef device-ref {
+        type leafref {
+            path "/nt:network-topology/nt:topology[topology-id = topology-netconf]/node";
+        }
+        description "mounted device ref";
+    }
+
+    grouping configured-device-info {
+        leaf device-name {
+            type device-ref;
+            description "mounted device";
+        }
+    }
+
+    grouping mounted-device-info {
+        uses configured-device-info;
+
+        leaf device-subscription-id {
+            type notif-bis:subscription-id;
+            description "subscripton-id from device";
+        }
+    }
+
+    augment "/notif-bis:establish-subscription/notif-bis:input" { 
+        uses configured-device-info;
+    }
+
+    augment "/notif-bis:subscription-config/notif-bis:subscription" {
+        description
+            "Contains the list of subscriptions that are configured,
+             as opposed to established via RPC or other means.
+
+             Augmented here with a leafref to the mounted device.";
+        uses configured-device-info;
+    }
+
+    augment "/notif-bis:subscriptions/notif-bis:subscription" {
+        description
+            "Contains the list of currently active subscriptions,
+             i.e. subscriptions that are currently in effect,
+             used for subscription management and monitoring purposes.
+
+             This includes subscriptions that have been setup via RPC
+             primitives, e.g. establish-subscription, delete-subscription,
+             and modify-subscription, as well as subscriptions that
+             have been established via configuration.
+
+             Augmented here with both a leafref to the mounted device
+             and with the device's subscription-id";
+        uses mounted-device-info;
+    }
+
+    container push-updates {
+        list push-update {
+            key subscription-id;
+            leaf subscription-id {
+                type notif-bis:subscription-id;
+                description
+                    "ODL subscription id";
+            }
+            leaf device-name {
+                type device-ref; 
+                description
+                    "Mount device name.";
+            }
+            leaf device-subscription-id {
+                type notif-bis:subscription-id;
+                description
+                    "device subscription id";
+            }
+            leaf time-of-update {
+                type yang:date-and-time;
+                description
+                    "This leaf contains the time of the update.";
+            }
+            leaf data {
+                type string;
+                description
+                    "this contains data in string format
+                    for the subscription path for each update";
+            }
+        }
+    }
+}
+
