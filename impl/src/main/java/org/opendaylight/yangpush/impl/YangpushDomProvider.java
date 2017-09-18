@@ -85,6 +85,7 @@ public class YangpushDomProvider implements Provider, AutoCloseable, DOMDataChan
         this.subEngine = YangpushSubscriptionEngine.getInstance();
         this.subEngine.setDataBroker(globalDomDataBroker);
         this.subEngine.createPushUpdateDataStore();
+        //this.subEngine.createPushUpdateOdlEventNs();
 
         final DOMRpcProviderService service = providerSession.getService(DOMRpcProviderService.class);
         yangpushRpcImpl = new YangpushRpcImpl(service,this.mountPointService, this.globalDomDataBroker);
